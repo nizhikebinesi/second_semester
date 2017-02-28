@@ -1,10 +1,10 @@
-package matrixes;
+package matrixes.exception;
 
 /**
- * Created by 1 on 16.02.2017.
+ *
  */
 public class NotInvertableException extends Exception {
-    NotInvertableException() {
+    public NotInvertableException() {
         super();
     }
 }

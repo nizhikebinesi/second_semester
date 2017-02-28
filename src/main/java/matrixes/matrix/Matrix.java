@@ -1,14 +1,13 @@
-package matrixes;
+package matrixes.matrix;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
+import matrixes.matrix.IMatrix;
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.util.Comparator;
 
-
-public class Matrix implements IMatrix, Cloneable, Serializable {
+/**
+ *
+ */
+public class Matrix implements IMatrix, Cloneable {
     private int N;
     protected double[] matrix;
     private boolean isDeterminantActual = true;
@@ -28,6 +27,9 @@ public class Matrix implements IMatrix, Cloneable, Serializable {
      * @param N
      */
     public Matrix(int N) {
+        if (N < 0) {
+            throw new IllegalArgumentException();
+        }
         this.N = N;
         this.matrix = new double[N * N];
     }
@@ -58,7 +60,6 @@ public class Matrix implements IMatrix, Cloneable, Serializable {
      */
     @Override
     public String toString() {
-        // rewrite
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < this.N; i++) {
             for (int j = 0; j < this.N; j++) {
@@ -76,11 +77,15 @@ public class Matrix implements IMatrix, Cloneable, Serializable {
      * @return
      */
     public double getElem(int i, int j) {
+        if (i >= N || j >= N || i < 0 || j < 0) {
+            throw new IllegalArgumentException();
+        }
         return this.matrix[i * this.N + j];
     }
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
+        //maybe rewrite
         return super.clone();
     }
 
@@ -91,6 +96,9 @@ public class Matrix implements IMatrix, Cloneable, Serializable {
      * @return
      */
     public void setElem(int i, int j, double elem) {
+        if (i >= N || j >= N || i < 0 || j < 0) {
+            throw new IllegalArgumentException();
+        }
         this.matrix[i * this.N + j] = elem;
         this.isDeterminantActual = false;
     }
@@ -107,8 +115,6 @@ public class Matrix implements IMatrix, Cloneable, Serializable {
         if (this.N <= 0) {
             throw new IllegalArgumentException();
         }
-
-        //System.out.println();
 
         double[] matrix = this.matrix.clone();
 
@@ -166,5 +172,30 @@ public class Matrix implements IMatrix, Cloneable, Serializable {
         }
 
         return (exchanges % 2 == 0)?(determinator):((-1)*determinator);
+    }
+
+    /**
+     *
+     * @param out
+     * @throws IOException
+     */
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeInt(this.N);
+        out.writeBoolean(this.isDeterminantActual);
+        out.writeDouble(this.det);
+        out.writeObject(this.matrix);
+    }
+
+    /**
+     *
+     * @param in
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        this.N = in.readInt();
+        this.isDeterminantActual = in.readBoolean();
+        this.det = in.readDouble();
+        this.matrix = (double[]) in.readObject();
     }
 }

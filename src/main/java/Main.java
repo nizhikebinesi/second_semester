@@ -1,95 +1,63 @@
-import matrixes.InvertableMatrix;
-import matrixes.Matrix;
-import matrixes.NotInvertableException;
+import matrixes.DemoMatrix;
+import matrixes.matrix.InvertableMatrix;
+import matrixes.exception.NotInvertableException;
+import matrixes.matrix.Matrix;
+import matrixes.reader.MatrixFileReader;
+import matrixes.reader.MatrixSystemReader;
+import matrixes.writer.MatrixFileWriter;
+import matrixes.writer.MatrixSystemWriter;
 
-import java.math.BigInteger;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 
 /**
  * Created by 1 on 15.02.2017.
  */
 public class Main {
 
-
+    /**
+     *
+     * @param args
+     * @throws NotInvertableException
+     */
     public static void main(String[] args) throws NotInvertableException {
-        InvertableMatrix matr = new InvertableMatrix(3);
-        matr.setElem(0,0,2);
-        matr.setElem(0,1,5);
-        matr.setElem(0,2,7);
-        matr.setElem(1,0,6);
-        matr.setElem(1,1,3);
-        matr.setElem(1,2,4);
-        matr.setElem(2,0,5);
-        matr.setElem(2,1,-2);
-        matr.setElem(2,2,-3);
-        //matr.setElem(1, 1, 45);
-        //matr.setElem(1,2, -32);
-        //matr.setElem(0,1, 223);
-        //matr.setElem(2,0, -444);
-        //matr.setElem(3,3,-1);
-        //matr.setElem(2,2,-32);
-        //req
-        /*matr.setElem(0,2,3);
-        matr.setElem(1,2,3);
-        matr.setElem(2,3,3);
-        matr.setElem(3,1,3);
-        matr.setElem(0,1,2);
-        matr.setElem(1,3,2);
-        matr.setElem(3,0,2);
-        matr.setElem(2,0,1);
-        matr.setElem(3,2,1);
-        matr.setElem(3,3,1);
-        matr.setElem(0,3,4);
-        matr.setElem(1,0,4);
-        matr.setElem(1,1,4);
-        matr.setElem(2,1,4);
-        matr.setElem(2,2,4);*/
-        System.out.println(matr);
-        System.out.println(matr.getDet());
-        System.out.println(matr.getInverse());
-        //req
-        //System.out.println(matr.getDet());
-        //BigInteger b = new BigInteger("1");
-        //b = b.multiply(BigInteger.valueOf(42));
-        //System.out.println(b);
-        //System.out.println();
-        //System.out.println(matr);
-        //InvertableMatrix arr = new InvertableMatrix(3);
-        //for (int i = 0; i < 3; i++) {
-        //    arr.setElem(i, i, 1);
-        //}
-        /*arr.setElem(0, 1,1);
-        arr.setElem(1, 0, 4);
-        arr.setElem(0,2,3);
-        arr.setElem(2,2,1);*//*
-        arr.setElem(0,1, 3);
-        arr.setElem(0,2, -1);
-        arr.setElem(0,3, 2);
-        arr.setElem(1,0, 2);
-        arr.setElem(1,1, 1);
-        arr.setElem(2,0, -2);
-        arr.setElem(2,1, -1);
-        arr.setElem(2,3, 2);
-        arr.setElem(3,0, -5);
-        arr.setElem(3,1, 7);
-        arr.setElem(3,2, 1);
-        arr.setElem(3,3, 1);*/
-        //arr.setElem(0,1, 3);
-        //arr.setElem(0,1, 3);
-        //arr.setElem(0,1, 3);
-        //arr.setElem(0,1, 3);
-        //arr.setElem(0,1, 3);
-        //arr.setElem(0,1, 3);
-        //arr.setElem(0,1, 3);
-        /*arr.setElem(0,0, 1);
-        arr.setElem(0,1, 3);
-        arr.setElem(0,2, 2);
-        arr.setElem(1,0, 1);
-        arr.setElem(1,1, -2);
-        arr.setElem(1,2, 1);
-        arr.setElem(2,0, 1);
-        arr.setElem(2,1, -1);
-        arr.setElem(2,2, 1);
-        System.out.println(arr);
-        System.out.println(arr.getInverse());*/
+        try(
+                MatrixSystemWriter toConsole = new MatrixSystemWriter();
+                MatrixSystemReader fromConsole = new MatrixSystemReader();
+                MatrixFileWriter toFile = new MatrixFileWriter("/", "target");
+                MatrixFileReader fromFile = new MatrixFileReader("/", "source");
+        ) {
+            Matrix justMatrix = new Matrix(3);
+            // Fill justMatrix by random numbers in (-10, 10)
+            DemoMatrix.randomFilling(justMatrix, 20, 10);
+            // Write to console
+            toConsole.write(justMatrix);
+            // Read from console
+            fromConsole.read(justMatrix);
+            // Determinant to console
+            System.out.println("Det of matrix = " + justMatrix.getDet());
+            //
+            InvertableMatrix invert = new InvertableMatrix(3);
+            // Read from console
+            fromConsole.read(invert);
+            // Give(& to console) inverse matrix
+            toConsole.write(invert.getInverse());
+            // Invert to file
+            toFile.write(invert);
+            InvertableMatrix invert2 = null;
+            // Read invert from file
+            fromFile.read(invert2);
+            // Invert2 to console
+            toConsole.write(invert2);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
